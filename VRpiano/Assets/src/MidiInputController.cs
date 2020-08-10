@@ -8,11 +8,12 @@ using UnityEngine;
 namespace MidiJack {
     public class MidiInputController : MonoBehaviour {
         public GameObject[] pianoKeys;
+        public bool[] pianoColors;
         bool check = true;
         public Material whiteKeyMat;
         public Material blackKeyMat;
         int[] pianoMats = new int[88];
-
+        bool[] rotated = new bool[88];
         public ParticleSystem particleLauncher;
         public ParticleSystem worldParticleLauncher;
         // Update is called once per frame
@@ -30,7 +31,11 @@ namespace MidiJack {
             for(int i = 0; i < 88; i++) {
                 if (pianoValues[i])
                 {
-                    pianoKeys[i].GetComponent<Renderer>().material.color = Color.red;
+                    pianoKeys[i].GetComponent<Renderer>().material.color = new Color(0.64f, 0.32f, 0.77f);
+                    if(!rotated[i]){
+                        pianoKeys[i].transform.Rotate(0.0f,-5f,0.0f);
+                        rotated[i] = true;
+                    }
                     particleLauncher.transform.position = new Vector3(pianoKeys[i].transform.position.x + 0.07f, pianoKeys[i].transform.position.y, pianoKeys[i].transform.position.z);
                     particleLauncher.Emit(1);
                     int shineUp = UnityEngine.Random.Range(0,150);
@@ -41,7 +46,15 @@ namespace MidiJack {
                         worldParticleLauncher.Emit(10);
                     } 
                 } else {
-                    pianoKeys[i].GetComponent<Renderer>().material = whiteKeyMat;   
+                    if(rotated[i]) {
+                        pianoKeys[i].transform.Rotate(0.0f,5f,0.0f);
+                        rotated[i] = false;
+                    }
+                    if(!pianoColors[i]) {
+                        pianoKeys[i].GetComponent<Renderer>().material = whiteKeyMat;   
+                    } else {
+                        pianoKeys[i].GetComponent<Renderer>().material = blackKeyMat;   
+                    }
                 }
                 
             }
